@@ -43,9 +43,10 @@ metadata:
   namespace: test-elasticache
 spec:
   envName: test-elasticache
-  pods:
-  - name: processor
-    image: quay.io/psav/clowder-hello
+  deployments:
+    - name: processor
+      podSpec:
+        image: quay.io/psav/clowder-hello
   inMemoryDb: true
 ---
 apiVersion: v1

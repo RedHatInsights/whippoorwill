@@ -45,7 +45,8 @@ spec:
   cyndi:
     enabled: true
   envName: test-cyndi-strimzi
-  pods:
+  deployments:
   - name: processor
-    image: quay.io/psav/clowder-hello
+    podSpec:
+      image: quay.io/psav/clowder-hello
 

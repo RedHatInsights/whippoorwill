@@ -267,10 +267,6 @@ func (r *ClowdEnvironmentReconciler) SetAppInfo(p providers.Provider) error {
 			continue
 		}
 
-		if app.Spec.Pods != nil {
-			app.ConvertToNewShim()
-		}
-
 		appstatus := crd.AppInfo{
 			Name:        app.Name,
 			Deployments: []crd.DeploymentInfo{},
