@@ -6,29 +6,20 @@ import "fmt"
 import "encoding/json"
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *CloudWatchConfig) UnmarshalJSON(b []byte) error {
+func (j *KafkaLogConfig) UnmarshalJSON(b []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(b, &raw); err != nil {
 		return err
 	}
-	if v, ok := raw["accessKeyId"]; !ok || v == nil {
-		return fmt.Errorf("field accessKeyId: required")
+	if v, ok := raw["topicName"]; !ok || v == nil {
+		return fmt.Errorf("field topicName: required")
 	}
-	if v, ok := raw["logGroup"]; !ok || v == nil {
-		return fmt.Errorf("field logGroup: required")
-	}
-	if v, ok := raw["region"]; !ok || v == nil {
-		return fmt.Errorf("field region: required")
-	}
-	if v, ok := raw["secretAccessKey"]; !ok || v == nil {
-		return fmt.Errorf("field secretAccessKey: required")
-	}
-	type Plain CloudWatchConfig
+	type Plain KafkaLogConfig
 	var plain Plain
 	if err := json.Unmarshal(b, &plain); err != nil {
 		return err
 	}
-	*j = CloudWatchConfig(plain)
+	*j = KafkaLogConfig(plain)
 	return nil
 }
 
@@ -357,6 +348,54 @@ type CloudWatchConfig struct {
 	SecretAccessKey string `json:"secretAccessKey"`
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *CloudWatchConfig) UnmarshalJSON(b []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(b, &raw); err != nil {
+		return err
+	}
+	if v, ok := raw["accessKeyId"]; !ok || v == nil {
+		return fmt.Errorf("field accessKeyId: required")
+	}
+	if v, ok := raw["logGroup"]; !ok || v == nil {
+		return fmt.Errorf("field logGroup: required")
+	}
+	if v, ok := raw["region"]; !ok || v == nil {
+		return fmt.Errorf("field region: required")
+	}
+	if v, ok := raw["secretAccessKey"]; !ok || v == nil {
+		return fmt.Errorf("field secretAccessKey: required")
+	}
+	type Plain CloudWatchConfig
+	var plain Plain
+	if err := json.Unmarshal(b, &plain); err != nil {
+		return err
+	}
+	*j = CloudWatchConfig(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *LabelConfig) UnmarshalJSON(b []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(b, &raw); err != nil {
+		return err
+	}
+	if v, ok := raw["name"]; !ok || v == nil {
+		return fmt.Errorf("field name: required")
+	}
+	if v, ok := raw["value"]; !ok || v == nil {
+		return fmt.Errorf("field value: required")
+	}
+	type Plain LabelConfig
+	var plain Plain
+	if err := json.Unmarshal(b, &plain); err != nil {
+		return err
+	}
+	*j = LabelConfig(plain)
+	return nil
+}
+
 // Database Configuration
 type DatabaseConfig struct {
 	// Defines the pgAdmin password.
@@ -432,10 +471,33 @@ type KafkaConfig struct {
 	Topics []TopicConfig `json:"topics"`
 }
 
+// Kafka based logging config
+type KafkaLogConfig struct {
+	// Kafka Logging Topic name
+	TopicName string `json:"topicName"`
+}
+
+type LabelConfig struct {
+	// The label name
+	Name string `json:"name"`
+
+	// The label value
+	Value string `json:"value"`
+}
+
 // Logging Configuration
 type LoggingConfig struct {
 	// Cloudwatch corresponds to the JSON schema field "cloudwatch".
 	Cloudwatch *CloudWatchConfig `json:"cloudwatch,omitempty"`
+
+	// Kafka corresponds to the JSON schema field "kafka".
+	Kafka *KafkaLogConfig `json:"kafka,omitempty"`
+
+	// List of Labels
+	Labels []LabelConfig `json:"labels,omitempty"`
+
+	// List of tags
+	Tags []string `json:"tags,omitempty"`
 
 	// Defines the type of logging configuration
 	Type string `json:"type"`

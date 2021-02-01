@@ -1,0 +1,11 @@
+---
+apiVersion: kudo.dev/v1alpha1
+kind: TestStep
+commands:
+- script: sleep 1
+- script: kubectl get secret --namespace=test-local-kafka puptoo -o json > /tmp/test-local-kafka
+- script: jq -r '.data["cdappconfig.json"]' < /tmp/test-local-kafka | base64 -d > /tmp/test-local-kafka-json
+
+- script: jq -r '.logging.kafka.topicName == "platform.logging.logs"' -e < /tmp/test-local-kafka-json
+- script: jq -r '.logging.labels[0].value == "puptoo"' -e < /tmp/test-local-kafka-json
+- script: jq -r '.logging.tags[0] == "puptoo"' -e < /tmp/test-local-kafka-json

@@ -79,10 +79,44 @@
                 },
                 "cloudwatch": {
                     "$ref": "#/definitions/CloudWatchConfig"
+                },
+                "kafka": {
+                    "$ref": "#/definitions/KafkaLogConfig"
+                },
+                "tags": {
+                    "id": "tags",
+                    "description": "List of tags",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "labels": {
+                    "id": "labels",
+                    "description": "List of Labels",
+                    "type": "array",
+                    "items":{
+                        "$ref": "#/definitions/LabelConfig"
+                    }
                 }
             },
             "required": [
                 "type"
+            ]
+        },
+        "KafkaLogConfig":{
+            "title": "KafkaLogConfig",
+            "type": "object",
+            "description": "Kafka based logging config",
+            "properties": {
+                "topicName": {
+                    "id": "topicName",
+                    "type": "string",
+                    "description": "Kafka Logging Topic name"
+                }
+            },
+            "required": [
+                "topicName"
             ]
         },
         "CloudWatchConfig": {
@@ -337,6 +371,23 @@
                 "hostname",
                 "port"
 
+            ]
+        },
+        "LabelConfig": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "The label name",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "The label value",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "value"
             ]
         },
         "DependencyEndpoint": {

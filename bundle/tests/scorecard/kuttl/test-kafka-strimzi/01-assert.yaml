@@ -56,3 +56,17 @@ spec:
   partitions: 12
   replicas: 5
   topicName: ""
+
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  labels:
+    env: test-kafka-strimzi
+    strimzi.io/cluster: my-cluster
+  name: platform.logging.logs
+  namespace: test-kafka-strimzi-kafka
+spec:
+  partitions: 3
+  replicas: 3
+  topicName: ""

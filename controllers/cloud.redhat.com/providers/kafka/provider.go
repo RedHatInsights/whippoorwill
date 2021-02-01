@@ -8,6 +8,11 @@ import (
 	p "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers"
 )
 
+// KafkaLoggingTopicName defines the topic name that will be created in
+// strimzi and local mode
+const KafkaLoggingTopicName = "platform.logging.logs"
+
+// GetKafka is responsible for returning a ClowderProvider object
 func GetKafka(c *p.Provider) (p.ClowderProvider, error) {
 	kafkaMode := c.Env.Spec.Providers.Kafka.Mode
 	switch kafkaMode {

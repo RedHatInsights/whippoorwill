@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"context"
 	"fmt"
 
 	crd "cloud.redhat.com/clowder/v2/apis/cloud.redhat.com/v1alpha1"
@@ -27,6 +28,15 @@ type localKafka struct {
 	Config config.KafkaConfig
 }
 
+func createLocalKafkaTopic(ctx context.Context, host string, topicName string, partition int) error {
+	conn, err := kafka.DialLeader(ctx, "tcp", host, topicName, partition)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	return nil
+}
+
 func (k *localKafka) Provide(app *crd.ClowdApp, c *config.AppConfig) error {
 	if app.Spec.Cyndi.Enabled {
 		// for now we're assuming the kafka connect cluster is already present in the namespace
@@ -42,11 +52,16 @@ func (k *localKafka) Provide(app *crd.ClowdApp, c *config.AppConfig) error {
 		}
 	}
 
+	host := fmt.Sprintf("%s:29092", k.Config.Brokers[0].Hostname)
+
+	err := createLocalKafkaTopic(k.Ctx, host, KafkaLoggingTopicName, 0)
+	if err != nil {
+		return err
+	}
+
 	if len(app.Spec.KafkaTopics) == 0 {
 		return nil
 	}
-
-	host := fmt.Sprintf("%s:29092", k.Config.Brokers[0].Hostname)
 
 	for _, topic := range app.Spec.KafkaTopics {
 		topicName := fmt.Sprintf(
@@ -61,17 +76,17 @@ func (k *localKafka) Provide(app *crd.ClowdApp, c *config.AppConfig) error {
 			},
 		)
 
-		conn, err := kafka.DialLeader(k.Ctx, "tcp", host, topicName, 0)
+		err := createLocalKafkaTopic(k.Ctx, host, topicName, 0)
 		if err != nil {
 			return err
 		}
-		defer conn.Close()
 	}
 
 	c.Kafka = &k.Config
 	return nil
 }
 
+// NewLocalKafka returns a LocalKafka provider
 func NewLocalKafka(p *p.Provider) (providers.ClowderProvider, error) {
 	config := config.KafkaConfig{
 		Topics: []config.TopicConfig{},

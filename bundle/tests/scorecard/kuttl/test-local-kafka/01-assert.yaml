@@ -14,7 +14,6 @@ metadata:
   - apiVersion: cloud.redhat.com/v1alpha1
     kind: ClowdEnvironment
     name: test-local-kafka
-  selfLink: /api/v1/namespaces/test-local-kafka/services/test-local-kafka-kafka
 spec:
   ports:
   - name: kafka
@@ -40,7 +39,6 @@ metadata:
   - apiVersion: cloud.redhat.com/v1alpha1
     kind: ClowdEnvironment
     name: test-local-kafka
-  selfLink: /apis/apps/v1/namespaces/test-local-kafka/deployments/test-local-kafka-kafka
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -135,7 +133,6 @@ metadata:
   - apiVersion: cloud.redhat.com/v1alpha1
     kind: ClowdEnvironment
     name: test-local-kafka
-  selfLink: /api/v1/namespaces/test-local-kafka/services/test-local-kafka-zookeeper
 spec:
   ports:
   - name: zookeeper1
@@ -169,7 +166,6 @@ metadata:
   - apiVersion: cloud.redhat.com/v1alpha1
     kind: ClowdEnvironment
     name: test-local-kafka
-  selfLink: /apis/apps/v1/namespaces/test-local-kafka/deployments/test-local-kafka-zookeeper
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -277,3 +273,9 @@ spec:
         name: mq-zookeeper-2
       - emptyDir: {}
         name: mq-zookeeper-3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: puptoo-processor
+  namespace: test-local-kafka

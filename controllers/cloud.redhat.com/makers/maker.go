@@ -71,6 +71,21 @@ func (m *Maker) Make() error {
 		return err
 	}
 
+	if m.Env.Spec.Providers.Kafka.Mode != "none" {
+		kafkaLogConfig := config.KafkaLogConfig{
+			TopicName: "platform.logging.logs",
+		}
+		c.Logging.Kafka = &kafkaLogConfig
+	}
+
+	c.Logging.Tags = []string{
+		m.App.Name,
+	}
+	c.Logging.Labels = []config.LabelConfig{{
+		Name:  "app",
+		Value: m.App.Name,
+	}}
+
 	hash, err := m.persistConfig(c)
 
 	if err != nil {

@@ -33,3 +33,20 @@ spec:
     requests:
       cpu: 30m
       memory: 512Mi
+---
+apiVersion: cloud.redhat.com/v1alpha1
+kind: ClowdApp
+metadata:
+  name: puptoo
+  namespace: test-local-kafka
+spec:
+  envName: test-local-kafka
+  deployments:
+  - name: processor
+    podSpec:
+      image: quay.io/psav/clowder-hello
+    web: True
+    kafkaTopics:
+      - replicas: 3
+        partitions: 3
+        topicName: test
