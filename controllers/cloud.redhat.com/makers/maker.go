@@ -134,7 +134,7 @@ func (m *Maker) makeService(deployment crd.Deployment, app *crd.ClowdApp) error 
 		ports = append(ports, webPort)
 	}
 
-	utils.MakeService(&s, nn, map[string]string{"pod": nn.Name}, ports, m.App)
+	utils.MakeService(&s, nn, map[string]string{"clowdapp-deployment": nn.Name}, ports, m.App)
 
 	return update.Apply(m.Ctx, m.Client, &s)
 }
@@ -239,7 +239,7 @@ func (m *Maker) makeJob(job crd.Job, app *crd.ClowdApp, hash string) error {
 
 func buildPodTemplate(app *crd.ClowdApp, env *crd.ClowdEnvironment, pt *core.PodTemplateSpec, nn types.NamespacedName, job crd.Job, hash string) {
 	labels := app.GetLabels()
-	labels["pod"] = nn.Name
+	labels["clowdapp-deployment"] = nn.Name
 
 	pod := job.PodSpec
 
@@ -316,7 +316,7 @@ func buildPodTemplate(app *crd.ClowdApp, env *crd.ClowdEnvironment, pt *core.Pod
 
 func applyCronJob(app *crd.ClowdApp, env *crd.ClowdEnvironment, cj *batch.CronJob, pt *core.PodTemplateSpec, nn types.NamespacedName, job crd.Job, hash string) {
 	labels := app.GetLabels()
-	labels["pod"] = nn.Name
+	labels["clowdapp-deployment"] = nn.Name
 	app.SetObjectMeta(cj, crd.Name(nn.Name), crd.Labels(labels))
 
 	cj.Spec.Schedule = job.Schedule
@@ -475,7 +475,7 @@ func (m *Maker) makeDeployment(deployment crd.Deployment, app *crd.ClowdApp, has
 
 func initDeployment(app *crd.ClowdApp, env *crd.ClowdEnvironment, d *apps.Deployment, nn types.NamespacedName, deployment crd.Deployment, hash string) {
 	labels := app.GetLabels()
-	labels["pod"] = nn.Name
+	labels["clowdapp-deployment"] = nn.Name
 	app.SetObjectMeta(d, crd.Name(nn.Name), crd.Labels(labels))
 
 	pod := deployment.PodSpec

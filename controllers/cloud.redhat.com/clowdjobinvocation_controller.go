@@ -26,6 +26,7 @@ import (
 	batchv1 "k8s.io/api/batch/v1"
 	core "k8s.io/api/core/v1"
 	k8serr "k8s.io/apimachinery/pkg/api/errors"
+
 	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -326,7 +327,7 @@ func (r *ClowdJobInvocationReconciler) cjiToEnqueueUponJobUpdate(a handler.MapOb
 	for _, cji := range cjiList.Items {
 		// job event triggered a reconcile, check our jobs and match
 		// to enable a requeue
-		if contains(cji.Status.Jobs, job.ObjectMeta.Labels["pod"]) {
+		if contains(cji.Status.Jobs, job.ObjectMeta.Labels["clowdapp-deployment"]) {
 			reqs = append(reqs, reconcile.Request{
 				NamespacedName: types.NamespacedName{
 					Name:      cji.Name,

@@ -36,7 +36,7 @@ metadata:
   namespace: test-web-services
 spec:
   selector:
-    pod: puptoo-processor
+    clowdapp-deployment: puptoo-processor
   ports:
   - port: 9000
     targetPort: 9000
