@@ -173,7 +173,11 @@ func TestOptionalDependency(t *testing.T) {
 			ObjectMeta: nobjMeta,
 			Spec: crd.ClowdAppSpec{
 				Deployments: []crd.Deployment{{
-					Web:  true,
+					WebServices: crd.WebServices{
+						Public: crd.PublicWebService{
+							Enabled: true,
+						},
+					},
 					Name: "deep",
 				}}},
 		},
@@ -181,7 +185,11 @@ func TestOptionalDependency(t *testing.T) {
 				ObjectMeta: nobjMeta2,
 				Spec: crd.ClowdAppSpec{
 					Deployments: []crd.Deployment{{
-						Web:  true,
+						WebServices: crd.WebServices{
+							Public: crd.PublicWebService{
+								Enabled: true,
+							},
+						},
 						Name: "beeble",
 					}}},
 			},
@@ -259,7 +267,11 @@ func TestMultiDependency(t *testing.T) {
 					Deployments: []crd.Deployment{
 						{
 							Name: "whopper",
-							Web:  true,
+							WebServices: crd.WebServices{
+								Public: crd.PublicWebService{
+									Enabled: true,
+								},
+							},
 						},
 					},
 				}},
@@ -269,11 +281,19 @@ func TestMultiDependency(t *testing.T) {
 					Deployments: []crd.Deployment{
 						{
 							Name: "chopper",
-							Web:  true,
+							WebServices: crd.WebServices{
+								Public: crd.PublicWebService{
+									Enabled: true,
+								},
+							},
 						},
 						{
 							Name: "bopper",
-							Web:  true,
+							WebServices: crd.WebServices{
+								Public: crd.PublicWebService{
+									Enabled: true,
+								},
+							},
 						},
 					},
 				},

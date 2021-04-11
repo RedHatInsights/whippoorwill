@@ -1,0 +1,28 @@
+---
+apiVersion: cloud.redhat.com/v1alpha1
+kind: ClowdEnvironment
+metadata:
+  name: test-webhook-admission
+spec:
+  providers:
+    kafka:
+      namespace: test-webhook-admission
+      clusterName: webhook-admission
+      connectNamespace: test-webhook-admission
+      connectClusterName: webhook-admission-connect
+---
+apiVersion: cloud.redhat.com/v1alpha1
+kind: ClowdApp
+metadata:
+  name: puptoo
+  namespace: test-webhook-admission
+spec:
+  pods:
+  - name: processor
+    image: quay.io/psav/clowder-hello
+    env: 
+      - name: ENV_VAR_1
+        value: env_var_1
+      - name: ENV_VAR_2
+        value: env_var_2
+    web: true

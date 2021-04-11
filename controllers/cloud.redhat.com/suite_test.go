@@ -106,7 +106,7 @@ func TestMain(m *testing.M) {
 	k8sClient.Create(ctx, nsSpec)
 
 	stopManager := make(chan struct{})
-	go Run(":8080", false, testEnv.Config, stopManager)
+	go Run(":8080", false, testEnv.Config, stopManager, false)
 
 	for i := 1; i <= 50; i++ {
 		resp, err := http.Get("http://localhost:8080/metrics")

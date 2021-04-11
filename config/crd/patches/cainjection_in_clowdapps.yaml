@@ -5,4 +5,4 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE)/$(CERTIFICATE_NAME)
-  name: clowdapps.cloud.redhat.com.cloud.redhat.com
+  name: clowdapps.cloud.redhat.com

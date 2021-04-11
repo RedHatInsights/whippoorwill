@@ -100,6 +100,24 @@ function install_strimzi_operator {
     cd "$ROOT_DIR"
 }
 
+function install_cert_manager {
+    CERT_MANAGER_VERSION=v1.2.0
+
+    echo "*** Installing cert manager ..."
+    cd "$DOWNLOAD_DIR"
+
+    echo "*** Downloading ${CERT_MANAGER_YAML} ..."
+    curl -LsSO https://github.com/jetstack/cert-manager/releases/download/${CERT_MANAGER_VERSION}/cert-manager.yaml
+
+    echo "*** Installing Cert Manager resources ..."
+    kubectl apply -f cert-manager.yaml
+
+    echo "*** Will wait for cert manager to come up in background"
+    kubectl rollout status deployment/cert-manager -n cert-manager | sed "s/^/[cert-manager] /" &
+    BG_PIDS+=($!)
+
+    cd "$ROOT_DIR"
+}
 
 function install_prometheus_operator {
     PROM_VERSION=0.45.0
@@ -139,6 +157,7 @@ function install_prometheus_operator {
 
 install_strimzi_operator
 #install_prometheus_operator
+install_cert_manager
 
 FAILURES=0
 if [ ${#BG_PIDS[@]} -gt 0 ]; then

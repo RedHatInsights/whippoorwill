@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-to-admission-controller
+spec:
+  ingress:
+  - {}
+  podSelector:
+    matchLabels:
+      name: clowder-controller-manager
+  policyTypes:
+  - Ingress

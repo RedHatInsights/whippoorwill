@@ -25,7 +25,6 @@ var CyndiHostInventoryAppSecret = p.NewSingleResourceIdent(ProvName, "cyndi_host
 
 // GetKafka returns the correct kafka provider based on the environment.
 func GetKafka(c *p.Provider) (p.ClowderProvider, error) {
-	c.Env.ConvertDeprecatedKafkaSpec()
 	kafkaMode := c.Env.Spec.Providers.Kafka.Mode
 	switch kafkaMode {
 	case "operator":

@@ -1,4 +1,4 @@
-apiVersion: cloud.redhat.com.cloud.redhat.com/v1alpha1
+apiVersion: cloud.redhat.com/v1alpha1
 kind: ClowdEnvironment
 metadata:
   name: clowdenvironment-sample

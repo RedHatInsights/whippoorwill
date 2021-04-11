@@ -1,0 +1,52 @@
+
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  creationTimestamp: null
+  name: mutating-webhook-configuration
+webhooks:
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: webhook-service
+      namespace: system
+      path: /mutate-app
+  failurePolicy: Fail
+  admissionReviewVersions:
+  - "v1alpha1"
+  - "v1beta1"
+  sideEffects: "None"
+  name: clowdapp.cloud.redhat.com
+  rules:
+  - apiGroups:
+    - cloud.redhat.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - clowdapps
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: webhook-service
+      namespace: system
+      path: /mutate-env
+  failurePolicy: Fail
+  admissionReviewVersions:
+  - "v1alpha1"
+  - "v1beta1"
+  sideEffects: "None"
+  name: clowdenv.clowd.redhat.com
+  rules:
+  - apiGroups:
+    - cloud.redhat.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - clowdenvironments

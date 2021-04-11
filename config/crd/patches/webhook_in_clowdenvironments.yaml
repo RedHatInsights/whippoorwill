@@ -3,8 +3,9 @@
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: clowdenvironments.cloud.redhat.com.cloud.redhat.com
+  name: clowdenvironments.cloud.redhat.com
 spec:
+  preserveUnknownFields: false
   conversion:
     strategy: Webhook
     webhookClientConfig:
@@ -14,4 +15,5 @@ spec:
       service:
         namespace: system
         name: webhook-service
-        path: /convert
+        path: /mutate-env
+        port: 8080

@@ -442,22 +442,3 @@ func (i *ClowdEnvironment) GenerateTargetNamespace() string {
 func (i *ClowdEnvironment) IsReady() bool {
 	return (i.Status.Deployments.ManagedDeployments == i.Status.Deployments.ReadyDeployments)
 }
-
-// ConvertDeprecatedKafkaSpec converts values from the old Kafka provider spec into the new format
-func (i *ClowdEnvironment) ConvertDeprecatedKafkaSpec() {
-	if i.Spec.Providers.Kafka.ClusterName != "" {
-		i.Spec.Providers.Kafka.Cluster.Name = i.Spec.Providers.Kafka.ClusterName
-	}
-
-	if i.Spec.Providers.Kafka.Namespace != "" {
-		i.Spec.Providers.Kafka.Cluster.Namespace = i.Spec.Providers.Kafka.Namespace
-	}
-
-	if i.Spec.Providers.Kafka.ConnectNamespace != "" {
-		i.Spec.Providers.Kafka.Connect.Namespace = i.Spec.Providers.Kafka.ConnectNamespace
-	}
-
-	if i.Spec.Providers.Kafka.ConnectClusterName != "" {
-		i.Spec.Providers.Kafka.Connect.Name = i.Spec.Providers.Kafka.ConnectClusterName
-	}
-}

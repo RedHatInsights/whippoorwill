@@ -86,12 +86,12 @@ func initDeployment(app *crd.ClowdApp, env *crd.ClowdEnvironment, d *apps.Deploy
 	}
 	if pod.LivenessProbe != nil {
 		livenessProbe = *pod.LivenessProbe
-	} else if bool(deployment.Web) || deployment.WebServices.Public.Enabled {
+	} else if deployment.WebServices.Public.Enabled {
 		livenessProbe = baseProbe
 	}
 	if pod.ReadinessProbe != nil {
 		readinessProbe = *pod.ReadinessProbe
-	} else if bool(deployment.Web) || deployment.WebServices.Public.Enabled {
+	} else if deployment.WebServices.Public.Enabled {
 		readinessProbe = baseProbe
 		readinessProbe.InitialDelaySeconds = 45
 	}
@@ -115,7 +115,7 @@ func initDeployment(app *crd.ClowdApp, env *crd.ClowdEnvironment, d *apps.Deploy
 	}
 
 	// TODO: THIS NEEDS TO GO IN SERVICE
-	if deployment.Web {
+	if deployment.WebServices.Public.Enabled {
 		c.Ports = append(c.Ports, core.ContainerPort{
 			Name:          "web",
 			ContainerPort: env.Spec.Providers.Web.Port,

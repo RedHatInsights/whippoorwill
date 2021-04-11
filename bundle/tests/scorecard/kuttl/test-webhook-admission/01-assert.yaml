@@ -2,9 +2,9 @@
 apiVersion: cloud.redhat.com/v1alpha1
 kind: ClowdEnvironment
 metadata:
-  name: test-web-services
+  name: test-webhook-admission
 spec:
-  targetNamespace: test-web-services
+  targetNamespace: test-webhook-admission
   providers:
     web:
       port: 8000
@@ -16,6 +16,12 @@ spec:
       path: "/metrics"
     kafka:
       mode: none
+      cluster:
+        namespace: test-webhook-admission
+        name: webhook-admission
+      connect:
+        namespace: test-webhook-admission
+        name: webhook-admission-connect
     db:
       mode: none
     logging:
@@ -27,7 +33,7 @@ spec:
   resourceDefaults:
     limits:
       cpu: 400m
-      memory: 1024Mi
+      memory: 1Gi
     requests:
       cpu: 30m
       memory: 512Mi
@@ -36,10 +42,18 @@ apiVersion: cloud.redhat.com/v1alpha1
 kind: ClowdApp
 metadata:
   name: puptoo
-  namespace: test-web-services
+  namespace: test-webhook-admission
 spec:
-  envName: test-web-services
+  envName: test-webhook-admission
   deployments:
+  - name: processor-2
+    podSpec:
+      image: quay.io/psav/clowder-hello
+      env: 
+        - name: ENV_VAR_1
+          value: env_var_1
+        - name: ENV_VAR_2
+          value: env_var_2
   - name: processor
     podSpec:
       image: quay.io/psav/clowder-hello
@@ -49,7 +63,5 @@ spec:
         - name: ENV_VAR_2
           value: env_var_2
     webServices:
-      private:
-        enabled: True
       public:
         enabled: True

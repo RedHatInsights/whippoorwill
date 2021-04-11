@@ -5,7 +5,7 @@ metadata:
   name: clowdapp-editor-role
 rules:
 - apiGroups:
-  - cloud.redhat.com.cloud.redhat.com
+  - cloud.redhat.com
   resources:
   - clowdapps
   verbs:
@@ -17,7 +17,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - cloud.redhat.com.cloud.redhat.com
+  - cloud.redhat.com
   resources:
   - clowdapps/status
   verbs:

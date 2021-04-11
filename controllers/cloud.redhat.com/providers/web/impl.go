@@ -38,7 +38,7 @@ func (web *webProvider) makeService(deployment *crd.Deployment, app *crd.ClowdAp
 	containerPorts := []core.ContainerPort{}
 
 	appProtocol := "http"
-	if bool(deployment.Web) || deployment.WebServices.Public.Enabled {
+	if deployment.WebServices.Public.Enabled {
 		// Create the core service port
 		webPort := core.ServicePort{
 			Name:        "public",

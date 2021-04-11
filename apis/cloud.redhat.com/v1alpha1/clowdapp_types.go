@@ -419,32 +419,6 @@ func (i *ClowdApp) GetClowdSAName() string {
 	return fmt.Sprintf("%s-app", i.GetClowdName())
 }
 
-// ConvertToNewShim converts an old "pod" based spec into the new "deployment" style.
-func (i *ClowdApp) ConvertToNewShim() {
-	deps := []Deployment{}
-	for _, pod := range i.Spec.Pods {
-		dep := Deployment{
-			Name:        pod.Name,
-			Web:         pod.Web,
-			MinReplicas: pod.MinReplicas,
-			PodSpec: PodSpec{
-				Image:          pod.Image,
-				InitContainers: pod.InitContainers,
-				Command:        pod.Command,
-				Args:           pod.Args,
-				Env:            pod.Env,
-				Resources:      pod.Resources,
-				LivenessProbe:  pod.LivenessProbe,
-				ReadinessProbe: pod.ReadinessProbe,
-				Volumes:        pod.Volumes,
-				VolumeMounts:   pod.VolumeMounts,
-			},
-		}
-		deps = append(deps, dep)
-	}
-	i.Spec.Deployments = deps
-}
-
 // Omfunc is a utility function that performs an operation on a metav1.Object.
 type omfunc func(o metav1.Object)
 

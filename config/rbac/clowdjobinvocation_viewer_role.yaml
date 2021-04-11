@@ -5,7 +5,7 @@ metadata:
   name: clowdjobinvocation-viewer-role
 rules:
 - apiGroups:
-  - cloud.redhat.com.cloud.redhat.com
+  - cloud.redhat.com
   resources:
   - clowdjobinvocations
   verbs:
@@ -13,7 +13,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - cloud.redhat.com.cloud.redhat.com
+  - cloud.redhat.com
   resources:
   - clowdjobinvocations/status
   verbs:

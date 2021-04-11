@@ -3,7 +3,7 @@
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: clowdjobinvocations.cloud.redhat.com.cloud.redhat.com
+  name: clowdjobinvocations.cloud.redhat.com
 spec:
   conversion:
     strategy: Webhook

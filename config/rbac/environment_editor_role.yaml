@@ -5,7 +5,7 @@ metadata:
   name: clowdenvironment-editor-role
 rules:
 - apiGroups:
-  - cloud.redhat.com.cloud.redhat.com
+  - cloud.redhat.com
   resources:
   - clowdenvironments
   verbs:
@@ -17,7 +17,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - cloud.redhat.com.cloud.redhat.com
+  - cloud.redhat.com
   resources:
   - clowdenvironments/status
   verbs:

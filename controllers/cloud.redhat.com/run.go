@@ -16,6 +16,7 @@ import (
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
 
 var (
@@ -51,7 +52,7 @@ func init() {
 }
 
 // Run inits the manager and controllers and then starts the manager
-func Run(metricsAddr string, enableLeaderElection bool, config *rest.Config, signalHandler <-chan struct{}) {
+func Run(metricsAddr string, enableLeaderElection bool, config *rest.Config, signalHandler <-chan struct{}, enableWebHooks bool) {
 	setupLog.Info("Loaded config", "config", clowder_config.LoadedConfig)
 
 	mgr, err := ctrl.NewManager(config, ctrl.Options{
@@ -90,6 +91,29 @@ func Run(metricsAddr string, enableLeaderElection bool, config *rest.Config, sig
 		setupLog.Error(err, "unable to create controller", "controller", "ClowdJobInvocation")
 		os.Exit(1)
 	}
+
+	if enableWebHooks {
+		mgr.GetWebhookServer().Register(
+			"/mutate-app",
+			&webhook.Admission{
+				Handler: &mutantAnnotatorApp{
+					Client:   mgr.GetClient(),
+					Recorder: mgr.GetEventRecorderFor("app"),
+				},
+			},
+		)
+
+		mgr.GetWebhookServer().Register(
+			"/mutate-env",
+			&webhook.Admission{
+				Handler: &mutantAnnotatorEnv{
+					Client:   mgr.GetClient(),
+					Recorder: mgr.GetEventRecorderFor("env"),
+				},
+			},
+		)
+	}
+
 	// +kubebuilder:scaffold:builder
 
 	setupLog.Info("starting manager")

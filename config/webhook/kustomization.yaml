@@ -1,6 +1,7 @@
 resources:
 - manifests.yaml
 - service.yaml
+- network_policy.yaml
 
 configurations:
 - kustomizeconfig.yaml
