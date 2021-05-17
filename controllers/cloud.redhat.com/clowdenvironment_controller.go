@@ -28,6 +28,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -70,6 +71,7 @@ type ClowdEnvironmentReconciler struct {
 
 // +kubebuilder:rbac:groups=cloud.redhat.com,resources=clowdenvironments,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=cloud.redhat.com,resources=clowdenvironments/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups="",resources=serviceaccounts;configmaps;services;persistentvolumeclaims;secrets;events;namespaces,verbs=get;list;watch;create;update;patch;delete
 
 //Reconcile fn
 func (r *ClowdEnvironmentReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
@@ -234,17 +236,44 @@ func runProvidersForEnv(log logr.Logger, provider providers.Provider) error {
 func (r *ClowdEnvironmentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	r.Recorder = mgr.GetEventRecorderFor("env")
 	return ctrl.NewControllerManagedBy(mgr).
-		Owns(&apps.Deployment{}).
-		Owns(&core.Service{}).
+		Owns(&apps.Deployment{}, builder.WithPredicates(ignoreStatusUpdatePredicate(r.Log, "app"))).
+		Owns(&core.Service{}, builder.WithPredicates(ignoreStatusUpdatePredicate(r.Log, "app"))).
 		Watches(
 			&source.Kind{Type: &crd.ClowdApp{}},
 			&handler.EnqueueRequestsFromMapFunc{
 				ToRequests: handler.ToRequestsFunc(r.envToEnqueueUponAppUpdate),
 			},
+			builder.WithPredicates(ignoreStatusUpdatePredicate(r.Log, "env")),
 		).
 		For(&crd.ClowdEnvironment{}).
-		WithEventFilter(ignoreStatusUpdatePredicate(r.Log, "env")).
 		Complete(r)
+}
+
+func (r *ClowdAppReconciler) envConfigMapsUpdated(a handler.MapObject) []reconcile.Request {
+	ctx := context.Background()
+	apps := &crd.ClowdAppList{}
+
+	options := []client.ListOption{
+		client.InNamespace(a.Meta.GetNamespace()),
+	}
+
+	if err := r.Client.List(ctx, apps, options...); err != nil {
+		return nil
+	}
+
+	requests := []reconcile.Request{}
+
+	for _, app := range apps.Items {
+		requests = append(requests, reconcile.Request{
+			NamespacedName: types.NamespacedName{
+				Name:      app.Name,
+				Namespace: app.Namespace,
+			},
+		})
+	}
+	fmt.Printf("TRIGGERING ALLLL Y'ALL APPS %v", requests)
+
+	return requests
 }
 
 func (r *ClowdEnvironmentReconciler) envToEnqueueUponAppUpdate(a handler.MapObject) []reconcile.Request {

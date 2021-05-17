@@ -32,6 +32,7 @@ import (
 	"k8s.io/client-go/tools/record"
 
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/event"
@@ -322,6 +323,31 @@ func ignoreStatusUpdatePredicate(logr logr.Logger, ctrlName string) predicate.Pr
 	}
 }
 
+func configMapPredicate(logr logr.Logger, ctrlName string) predicate.Predicate {
+	return predicate.Funcs{
+		CreateFunc: func(e event.CreateEvent) bool {
+			logr.Info("BOOM CREATE", "ctrl", ctrlName, "name", e.Meta.GetName())
+			return false
+		},
+		UpdateFunc: func(e event.UpdateEvent) bool {
+			gvk, _ := getKindFromObj(scheme, e.ObjectNew)
+			if e.MetaNew.GetNamespace() != "kube-system" && gvk.Kind == "ConfigMap" {
+				logr.Info("BOOM UPDATE", "ctrl", ctrlName, "name", e.MetaNew.GetName(), "namespace", e.MetaNew.GetNamespace())
+				return true
+			}
+			return false
+		},
+		DeleteFunc: func(e event.DeleteEvent) bool {
+			logr.Info("BOOM DELETE", "ctrl", ctrlName, "name", e.Meta.GetName())
+			return false
+		},
+		GenericFunc: func(e event.GenericEvent) bool {
+			logr.Info("BOOM GENERIC", "ctrl", ctrlName, "name", e.Meta.GetName())
+			return false
+		},
+	}
+}
+
 // SetupWithManager sets up with Manager
 func (r *ClowdAppReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	r.Log.Info("Setting up manager")
@@ -341,11 +367,18 @@ func (r *ClowdAppReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			&source.Kind{Type: &crd.ClowdEnvironment{}},
 			&handler.EnqueueRequestsFromMapFunc{
 				ToRequests: handler.ToRequestsFunc(r.appsToEnqueueUponEnvUpdate)},
+			builder.WithPredicates(ignoreStatusUpdatePredicate(r.Log, "app")),
 		).
-		Owns(&apps.Deployment{}).
-		Owns(&core.Service{}).
-		Owns(&core.ConfigMap{}).
-		WithEventFilter(ignoreStatusUpdatePredicate(r.Log, "app")).
+		Owns(&apps.Deployment{}, builder.WithPredicates(ignoreStatusUpdatePredicate(r.Log, "app"))).
+		Owns(&core.Service{}, builder.WithPredicates(ignoreStatusUpdatePredicate(r.Log, "app"))).
+		Owns(&core.ConfigMap{}, builder.WithPredicates(ignoreStatusUpdatePredicate(r.Log, "app"))).
+		Watches(
+			&source.Kind{Type: &core.ConfigMap{}},
+			&handler.EnqueueRequestsFromMapFunc{
+				ToRequests: handler.ToRequestsFunc(r.envConfigMapsUpdated),
+			},
+			builder.WithPredicates(configMapPredicate(r.Log, "env")),
+		).
 		Complete(r)
 }
 
