@@ -1,8 +1,10 @@
 #!/bin/bash
+# Configures a local minikube cluster for testing.
 set -e
 
-# Script you can use to set up a local minikube cluster for testing
-# It is assumed you have already run 'minikube start' and your kubectl context is using the minikube cluster
+# Set to `kubectl` if kubectl is installed system-wide, its context is set to your minikube cluster,
+# and you wish to use it instead of the kubectl bundled with minikube.
+KUBECTL_CMD='minikube kubectl --'
 
 REINSTALL=0
 
@@ -51,7 +53,7 @@ function install_strimzi_operator {
     STRIMZI_TARFILE="strimzi-${STRIMZI_VERSION}.tar.gz"
 
     if [ $REINSTALL -ne 1 ]; then
-        STRIMZI_DEPLOYMENT=$(kubectl get deployment strimzi-cluster-operator -n $STRIMZI_OPERATOR_NS --ignore-not-found -o jsonpath='{.metadata.name}')
+        STRIMZI_DEPLOYMENT=$(${KUBECTL_CMD} get deployment strimzi-cluster-operator -n $STRIMZI_OPERATOR_NS --ignore-not-found -o jsonpath='{.metadata.name}')
         if [ ! -z "$STRIMZI_DEPLOYMENT" ]; then
             echo "*** Strimzi operator deployment found, skipping install ..."
             return 0
@@ -79,22 +81,22 @@ function install_strimzi_operator {
 
     echo "*** Creating ns ${STRIMZI_OPERATOR_NS}..."
     # if we hit an error, assumption is the Namespace already exists
-    kubectl create namespace $STRIMZI_OPERATOR_NS || echo " ... ignoring that error"
+    ${KUBECTL_CMD} create namespace $STRIMZI_OPERATOR_NS || echo " ... ignoring that error"
 
     echo "*** Adding cluster-wide RoleBindings for Strimzi ..."
     # if we hit an error, assumption is the ClusterRoleBinding already exists
-    kubectl create clusterrolebinding strimzi-cluster-operator-namespaced \
+    ${KUBECTL_CMD} create clusterrolebinding strimzi-cluster-operator-namespaced \
         --clusterrole=strimzi-cluster-operator-namespaced --serviceaccount ${STRIMZI_OPERATOR_NS}:strimzi-cluster-operator || echo " ... ignoring that error"
-    kubectl create clusterrolebinding strimzi-cluster-operator-entity-operator-delegation \
+    ${KUBECTL_CMD} create clusterrolebinding strimzi-cluster-operator-entity-operator-delegation \
         --clusterrole=strimzi-entity-operator --serviceaccount ${STRIMZI_OPERATOR_NS}:strimzi-cluster-operator || echo " ... ignoring that error"
-    kubectl create clusterrolebinding strimzi-cluster-operator-topic-operator-delegation \
+    ${KUBECTL_CMD} create clusterrolebinding strimzi-cluster-operator-topic-operator-delegation \
         --clusterrole=strimzi-topic-operator --serviceaccount ${STRIMZI_OPERATOR_NS}:strimzi-cluster-operator || echo " ... ignoring that error"
 
     echo "*** Installing Strimzi resources ..."
-    kubectl apply -f . -n $STRIMZI_OPERATOR_NS
+    ${KUBECTL_CMD} apply -f . -n $STRIMZI_OPERATOR_NS
 
     echo "*** Will wait for Strimzi operator to come up in background"
-    kubectl rollout status deployment/strimzi-cluster-operator -n $STRIMZI_OPERATOR_NS | sed "s/^/[strimzi] /" &
+    ${KUBECTL_CMD} rollout status deployment/strimzi-cluster-operator -n $STRIMZI_OPERATOR_NS | sed "s/^/[strimzi] /" &
     BG_PIDS+=($!)
 
     cd "$ROOT_DIR"
@@ -110,10 +112,10 @@ function install_cert_manager {
     curl -LsSO https://github.com/jetstack/cert-manager/releases/download/${CERT_MANAGER_VERSION}/cert-manager.yaml
 
     echo "*** Installing Cert Manager resources ..."
-    kubectl apply -f cert-manager.yaml
+    ${KUBECTL_CMD} apply -f cert-manager.yaml
 
     echo "*** Will wait for cert manager to come up in background"
-    kubectl rollout status deployment/cert-manager -n cert-manager | sed "s/^/[cert-manager] /" &
+    ${KUBECTL_CMD} rollout status deployment/cert-manager -n cert-manager | sed "s/^/[cert-manager] /" &
     BG_PIDS+=($!)
 
     cd "$ROOT_DIR"
@@ -125,7 +127,7 @@ function install_prometheus_operator {
     PROM_TARFILE="prometheus-operator-${PROM_VERSION}.tar.gz"
 
     if [ $REINSTALL -ne 1 ]; then
-        PROM_DEPLOYMENT=$(kubectl get deployment prometheus-operator -n $PROM_OPERATOR_NS --ignore-not-found -o jsonpath='{.metadata.name}')
+        PROM_DEPLOYMENT=$(${KUBECTL_CMD} get deployment prometheus-operator -n $PROM_OPERATOR_NS --ignore-not-found -o jsonpath='{.metadata.name}')
         if [ ! -z "$PROM_DEPLOYMENT" ]; then
             echo "*** Prometheus operator deployment found, skipping install ..."
             return 0
@@ -145,10 +147,10 @@ function install_prometheus_operator {
 
     echo "*** Applying prometheus operator manifest ..."
     cd prometheus-operator-${PROM_VERSION}
-    kubectl apply -f bundle.yaml
+    ${KUBECTL_CMD} apply -f bundle.yaml
 
     echo "*** Will wait for Prometheus operator to come up in background"
-    kubectl rollout status deployment/prometheus-operator -n $PROM_OPERATOR_NS | sed "s/^/[prometheus] /" &
+    ${KUBECTL_CMD} rollout status deployment/prometheus-operator -n $PROM_OPERATOR_NS | sed "s/^/[prometheus] /" &
     BG_PIDS+=($!)
 
     cd "$ROOT_DIR"
@@ -160,7 +162,7 @@ function install_cyndi_operator {
     DEPLOYMENT=cyndi-operator-controller-manager
 
     if [ $REINSTALL -ne 1 ]; then
-        OPERATOR_DEPLOYMENT=$(kubectl get deployment $DEPLOYMENT -n $OPERATOR_NS --ignore-not-found -o jsonpath='{.metadata.name}')
+        OPERATOR_DEPLOYMENT=$(${KUBECTL_CMD} get deployment $DEPLOYMENT -n $OPERATOR_NS --ignore-not-found -o jsonpath='{.metadata.name}')
         if [ ! -z "$OPERATOR_DEPLOYMENT" ]; then
             echo "*** cyndi-operator deployment found, skipping install ..."
             return 0
@@ -176,10 +178,10 @@ function install_cyndi_operator {
     curl -LsS $LATEST_MANIFEST -o cyndi-operator-manifest.yaml
 
     echo "*** Applying cyndi-operator manifest ..."
-    kubectl apply -f cyndi-operator-manifest.yaml
+    ${KUBECTL_CMD} apply -f cyndi-operator-manifest.yaml
 
     echo "*** Will wait for cyndi-operator to come up in background"
-    kubectl rollout status deployment/$DEPLOYMENT -n $OPERATOR_NS | sed "s/^/[cyndi-operator] /" &
+    ${KUBECTL_CMD} rollout status deployment/$DEPLOYMENT -n $OPERATOR_NS | sed "s/^/[cyndi-operator] /" &
     BG_PIDS+=($!)
 
     cd "$ROOT_DIR"
