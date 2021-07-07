@@ -434,6 +434,19 @@ spec:
                         - disabled
                         type: string
                     type: object
+                  sidecars:
+                    description: Defines the sidecar configuration
+                    properties:
+                      tokenRefresher:
+                        description: Sets up Token Refresher configuration
+                        properties:
+                          enabled:
+                            description: Enables or disables token refresher sidecars
+                            type: boolean
+                        required:
+                        - enabled
+                        type: object
+                    type: object
                   testing:
                     description: Defines the environment for iqe/smoke testing
                     properties:

@@ -146,6 +146,14 @@ type Deployment struct {
 	K8sAccessLevel K8sAccessLevel `json:"k8sAccessLevel,omitempty"`
 }
 
+type Sidecar struct {
+	// The name of the sidecar, only supported names allowed, (token-refresher)
+	Name string `json:"name"`
+
+	// Defines if the sidecar is enabled, defaults to False
+	Enabled bool `json:"enabled"`
+}
+
 // PodSpec defines a container running inside a ClowdApp.
 type PodSpec struct {
 
@@ -186,6 +194,9 @@ type PodSpec struct {
 
 	// A pass-through of a list of VolumesMounts in standa k8s format.
 	VolumeMounts []v1.VolumeMount `json:"volumeMounts,omitempty"`
+
+	// Lists the expected side cars, will be validated in the validating webhook
+	Sidecars []Sidecar `json:"sidecars,omitempty"`
 }
 
 // PodSpecDeprecated is a deprecated in favour of using the real k8s PodSpec object.
@@ -452,6 +463,14 @@ func (i *ClowdApp) GetDeploymentStatus() *common.DeploymentStatus {
 
 // GetDeploymentStatus returns the Status.Deployments member
 func (i *ClowdApp) GetDeploymentNamespacedName(d *Deployment) types.NamespacedName {
+	return types.NamespacedName{
+		Name:      fmt.Sprintf("%s-%s", i.Name, d.Name),
+		Namespace: i.Namespace,
+	}
+}
+
+// GetDeploymentStatus returns the Status.Deployments member
+func (i *ClowdApp) GetCronJobNamespacedName(d *Job) types.NamespacedName {
 	return types.NamespacedName{
 		Name:      fmt.Sprintf("%s-%s", i.Name, d.Name),
 		Namespace: i.Namespace,
