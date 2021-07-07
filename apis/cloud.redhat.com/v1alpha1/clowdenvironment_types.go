@@ -366,6 +366,24 @@ type ClowdEnvironmentSpec struct {
 	ServiceConfig ServiceConfig `json:"serviceConfig,omitempty"`
 }
 
+type SplunkConfig struct {
+	// Enables or disables splunk sidecars
+	Enabled bool `json:"enabled"`
+}
+
+type TokenRefresherConfig struct {
+	// Enables or disables token refresher sidecars
+	Enabled bool `json:"enabled"`
+}
+
+type Sidecars struct {
+	// Sets up Splunk sidecar configuration
+	Splunk SplunkConfig `json:"splunk,omitempty"`
+
+	// Sets up Token Refresher configuration
+	TokenRefresher TokenRefresherConfig `json:"tokenRefresher,omitempty"`
+}
+
 // ProvidersConfig defines a group of providers configuration for a ClowdEnvironment.
 type ProvidersConfig struct {
 	// Defines the Configuration for the Clowder Database Provider.
@@ -400,6 +418,9 @@ type ProvidersConfig struct {
 
 	// Defines the environment for iqe/smoke testing
 	Testing TestingConfig `json:"testing,omitempty"`
+
+	// Defines the sidecar configuration
+	Sidecars Sidecars `json:"sidecars,omitempty"`
 }
 
 // MinioStatus defines the status of a minio instance in local mode.

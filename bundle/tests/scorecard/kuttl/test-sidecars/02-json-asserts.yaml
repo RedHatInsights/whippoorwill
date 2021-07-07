@@ -1,0 +1,7 @@
+---
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+commands:
+- script: sleep 5
+- script: kubectl get pod --namespace=test-sidecars -o json | jq -r ".items[0].metadata.name" > /tmp/test-sidecars-pod-name
+- script: kubectl exec -c splunk -n test-sidecars --stdin `cat /tmp/test-sidecars-pod-name` -- cat /opt/splunkforwarder/etc/system/local/inputs.conf | grep "some data"

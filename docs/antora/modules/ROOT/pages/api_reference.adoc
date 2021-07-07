@@ -687,6 +687,7 @@ PodSpec defines a container running inside a ClowdApp.
 | *`readinessProbe`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/#probe-v1-core[$$Probe$$]__ | A pass-through of a Readiness Probe specification in standard k8s format. If omitted, a standard probe will be setup point to the webPort defined in the ClowdEnvironment and a path of /healthz. Ignored if Web is set to false.
 | *`volumes`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/#volume-v1-core[$$Volume$$] array__ | A pass-through of a list of Volumes in standa k8s format.
 | *`volumeMounts`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/#volumemount-v1-core[$$VolumeMount$$] array__ | A pass-through of a list of VolumesMounts in standa k8s format.
+| *`sidecars`* __xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-sidecar[$$Sidecar$$] array__ | Lists the expected side cars, will be validated in the validating webhook
 |===
 
 
@@ -777,6 +778,7 @@ ProvidersConfig defines a group of providers configuration for a ClowdEnvironmen
 | *`serviceMesh`* __xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-servicemeshconfig[$$ServiceMeshConfig$$]__ | Defines the Configuration for the Clowder ServiceMesh Provider.
 | *`pullSecrets`* __xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-namespacedname[$$NamespacedName$$]__ | Defines the pull secret to use for the service accounts.
 | *`testing`* __xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-testingconfig[$$TestingConfig$$]__ | Defines the environment for iqe/smoke testing
+| *`sidecars`* __xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-sidecars[$$Sidecars$$]__ | Defines the sidecar configuration
 |===
 
 
@@ -831,6 +833,59 @@ ServiceMeshConfig determines if this env should be part of a service mesh and, i
 |===
 
 
+[id="{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-sidecar"]
+==== Sidecar 
+
+
+
+.Appears In:
+****
+- xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-podspec[$$PodSpec$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`name`* __string__ | The name of the sidecar, only supported names allowed, (token-refresher, splunk)
+| *`enabled`* __boolean__ | Defines if the sidecar is enabled, defaults to False
+|===
+
+
+[id="{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-sidecars"]
+==== Sidecars 
+
+
+
+.Appears In:
+****
+- xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-providersconfig[$$ProvidersConfig$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`splunk`* __xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-splunkconfig[$$SplunkConfig$$]__ | Sets up Splunk sidecar configuration
+| *`tokenRefresher`* __xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-tokenrefresherconfig[$$TokenRefresherConfig$$]__ | Sets up Token Refresher configuration
+|===
+
+
+[id="{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-splunkconfig"]
+==== SplunkConfig 
+
+
+
+.Appears In:
+****
+- xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-sidecars[$$Sidecars$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`enabled`* __boolean__ | Enables or disables splunk sidecars
+|===
+
+
 [id="{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-testingconfig"]
 ==== TestingConfig 
 
@@ -864,6 +919,23 @@ ServiceMeshConfig determines if this env should be part of a service mesh and, i
 |===
 | Field | Description
 | *`iqePlugin`* __string__ | 
+|===
+
+
+[id="{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-tokenrefresherconfig"]
+==== TokenRefresherConfig 
+
+
+
+.Appears In:
+****
+- xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-sidecars[$$Sidecars$$]
+****
+
+[cols="25a,75a", options="header"]
+|===
+| Field | Description
+| *`enabled`* __boolean__ | Enables or disables token refresher sidecars
 |===
 
 

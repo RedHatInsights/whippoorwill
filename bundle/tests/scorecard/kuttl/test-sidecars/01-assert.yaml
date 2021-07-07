@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: puptoo
+  namespace: test-sidecars
+  labels:
+    app: puptoo
+  ownerReferences:
+  - apiVersion: cloud.redhat.com/v1alpha1
+    kind: ClowdApp
+    name: puptoo
+type: Opaque
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: puptoo-processor
+  namespace: test-sidecars
+spec:
+  template:
+    spec:
+      serviceAccountName: puptoo-processor
+      containers:
+      - name: puptoo-processor
+      - name: splunk
+      - name: token-refresher

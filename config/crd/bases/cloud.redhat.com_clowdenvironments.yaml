@@ -433,6 +433,28 @@ spec:
                         - disabled
                         type: string
                     type: object
+                  sidecars:
+                    description: Defines the sidecar configuration
+                    properties:
+                      splunk:
+                        description: Sets up Splunk sidecar configuration
+                        properties:
+                          enabled:
+                            description: Enables or disables splunk sidecars
+                            type: boolean
+                        required:
+                        - enabled
+                        type: object
+                      tokenRefresher:
+                        description: Sets up Token Refresher configuration
+                        properties:
+                          enabled:
+                            description: Enables or disables token refresher sidecars
+                            type: boolean
+                        required:
+                        - enabled
+                        type: object
+                    type: object
                   testing:
                     description: Defines the environment for iqe/smoke testing
                     properties:

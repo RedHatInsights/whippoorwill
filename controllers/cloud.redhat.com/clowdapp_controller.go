@@ -65,6 +65,7 @@ import (
 	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/pullsecrets"
 	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/serviceaccount"
 	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/servicemesh"
+	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/sidecar"
 	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/web"
 
 	crd "cloud.redhat.com/clowder/v2/apis/cloud.redhat.com/v1alpha1"

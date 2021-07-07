@@ -1,0 +1,86 @@
+---
+apiVersion: cloud.redhat.com/v1alpha1
+kind: ClowdEnvironment
+metadata:
+  name: test-sidecars
+spec:
+  targetNamespace: test-sidecars
+  providers:
+    web:
+      port: 8000
+      mode: operator
+    metrics:
+      port: 9000
+      mode: operator
+      path: "/metrics"
+    kafka:
+      mode: none
+    db:
+      mode: none
+    logging:
+      mode: none
+    objectStore:
+      mode: none
+    inMemoryDb:
+      mode: none
+    sidecars:
+      splunk:
+        enabled: False
+      tokenRefresher:
+        enabled: False
+  resourceDefaults:
+    limits:
+      cpu: 400m
+      memory: 1024Mi
+    requests:
+      cpu: 30m
+      memory: 512Mi
+---
+apiVersion: cloud.redhat.com/v1alpha1
+kind: ClowdApp
+metadata:
+  name: puptoo
+  namespace: test-sidecars
+spec:
+  envName: test-sidecars
+  deployments:
+  - name: processor
+    podSpec:
+      image: quay.io/psav/clowder-hello
+      sidecars:
+        - name: splunk
+          enabled: true
+        - name: token-refresher
+          enabled: true
+---
+apiVersion: v1
+kind: ConfigMap
+data:
+  inputs.conf: |
+    I have some data here for you
+  kind: ConfigMap
+metadata:
+  name: puptoo-splunk
+  namespace: test-sidecars
+type: Opaque
+---
+apiVersion: v1
+data:
+  splunk.pem: U3BsdW5rUEVN #SplunkPEM
+kind: Secret
+metadata:
+  name: puptoo-splunk
+  namespace: test-sidecars
+type: Opaque
+---
+apiVersion: v1
+data:
+  CLIENT_ID: Y2xpZW50X2lk #client_id
+  CLIENT_SECRET: Y2xpZW50X3NlY3JldA== #client_secret
+  ISSUER_URL: aXNzdWVyX3VybA== #issuer_url
+  URL: dXJs #url
+kind: Secret
+metadata:
+  name: puptoo-token-refresher
+  namespace: test-sidecars
+type: Opaque

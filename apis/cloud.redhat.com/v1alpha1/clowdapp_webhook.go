@@ -17,6 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"fmt"
+
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -44,21 +46,9 @@ var _ webhook.Validator = &ClowdApp{}
 func (r *ClowdApp) ValidateCreate() error {
 	clowdapplog.Info("validate create", "name", r.Name)
 
-	var allErrs field.ErrorList
-
-	if r.Spec.Database.Name != "" && r.Spec.Database.SharedDBAppName != "" {
-		allErrs = append(allErrs, field.Forbidden(
-			field.NewPath("spec.Database.Name", "spec.Database.SharedDBAppName"), "cannot set db name and sharedDbApp Name together"),
-		)
-	}
-
-	if len(allErrs) == 0 {
-		return nil
-	}
-
-	return apierrors.NewInvalid(
-		schema.GroupKind{Group: "cloud.redhat.com", Kind: "ClowdApp"},
-		r.Name, allErrs,
+	return r.processValidations(r,
+		validateDatabase,
+		validateSidecars,
 	)
 }
 
@@ -66,21 +56,9 @@ func (r *ClowdApp) ValidateCreate() error {
 func (r *ClowdApp) ValidateUpdate(old runtime.Object) error {
 	clowdapplog.Info("validate update", "name", r.Name)
 
-	var allErrs field.ErrorList
-
-	if r.Spec.Database.Name != "" && r.Spec.Database.SharedDBAppName != "" {
-		allErrs = append(allErrs, field.Forbidden(
-			field.NewPath("spec.Database.Name", "spec.Database.SharedDBAppName"), "cannot set db name and sharedDbApp Name together"),
-		)
-	}
-
-	if len(allErrs) == 0 {
-		return nil
-	}
-
-	return apierrors.NewInvalid(
-		schema.GroupKind{Group: "cloud.redhat.com", Kind: "ClowdApp"},
-		r.Name, allErrs,
+	return r.processValidations(r,
+		validateDatabase,
+		validateSidecars,
 	)
 }
 
@@ -90,4 +68,69 @@ func (r *ClowdApp) ValidateDelete() error {
 
 	// TODO(user): fill in your validation logic upon object deletion.
 	return nil
+}
+
+type appValidationFunc func(*ClowdApp) field.ErrorList
+
+func (r *ClowdApp) processValidations(o *ClowdApp, vfns ...appValidationFunc) error {
+	var allErrs field.ErrorList
+
+	for _, validation := range vfns {
+		fieldList := validation(o)
+		if fieldList != nil {
+			allErrs = append(allErrs, fieldList...)
+		}
+	}
+
+	if len(allErrs) == 0 {
+		return nil
+	}
+
+	return apierrors.NewInvalid(
+		schema.GroupKind{Group: "cloud.redhat.com", Kind: "ClowdApp"},
+		r.Name, allErrs,
+	)
+}
+
+func validateDatabase(r *ClowdApp) field.ErrorList {
+	if r.Spec.Database.Name != "" && r.Spec.Database.SharedDBAppName != "" {
+		return field.ErrorList{field.Forbidden(
+			field.NewPath("spec.Database.Name", "spec.Database.SharedDBAppName"), "cannot set db name and sharedDbApp Name together"),
+		}
+	}
+	return nil
+}
+
+func validateSidecars(r *ClowdApp) field.ErrorList {
+	allErrs := field.ErrorList{}
+	for depIndx, deployment := range r.Spec.Deployments {
+		for carIndx, sidecar := range deployment.PodSpec.Sidecars {
+			if sidecar.Name != "token-refresher" && sidecar.Name != "splunk" {
+				allErrs = append(
+					allErrs,
+					field.Forbidden(
+						field.NewPath(fmt.Sprintf("spec.Deployment[%d].Sidecars[%d]", depIndx, carIndx)),
+						"Sidecar is of unknown type, must be one of [token-refresher, splunk]",
+					),
+				)
+			}
+		}
+	}
+	for jobIndx, job := range r.Spec.Jobs {
+		if job.Schedule == "" {
+			continue
+		}
+		for carIndx, sidecar := range job.PodSpec.Sidecars {
+			if sidecar.Name != "token-refresher" && sidecar.Name != "splunk" {
+				allErrs = append(
+					allErrs,
+					field.Forbidden(
+						field.NewPath(fmt.Sprintf("spec.Deployment[%d].Sidecars[%d]", jobIndx, carIndx)),
+						"Sidecar is of unknown type, must be one of [token-refresher, splunk]",
+					),
+				)
+			}
+		}
+	}
+	return allErrs
 }
