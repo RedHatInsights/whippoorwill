@@ -117,7 +117,7 @@ func (r *ClowdEnvironmentReconciler) Reconcile(ctx context.Context, req ctrl.Req
 
 	log.Info("Reconciliation started", "env", env.Name)
 
-	if env.Status.TargetNamespace == "" {
+	if env.Status.TargetNamespace == "" || env.Status.TargetNamespace != env.Spec.TargetNamespace {
 		if env.Spec.TargetNamespace != "" {
 			namespace := core.Namespace{}
 			namespaceName := types.NamespacedName{
@@ -130,7 +130,7 @@ func (r *ClowdEnvironmentReconciler) Reconcile(ctx context.Context, req ctrl.Req
 				return ctrl.Result{Requeue: true}, err
 			}
 			env.Status.TargetNamespace = env.Spec.TargetNamespace
-		} else {
+		} else if env.Status.TargetNamespace == "" && env.Spec.TargetNamespace == "" {
 			env.Status.TargetNamespace = env.GenerateTargetNamespace()
 			namespace := &core.Namespace{}
 			namespace.SetName(env.Status.TargetNamespace)
