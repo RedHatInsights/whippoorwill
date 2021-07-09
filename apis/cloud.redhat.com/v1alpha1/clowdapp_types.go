@@ -92,6 +92,10 @@ type PublicWebService struct {
 	// Enabled describes if Clowder should enable the public service and provide the
 	// configuration in the cdappconfig.
 	Enabled bool `json:"enabled,omitempty"`
+
+	// ApiEndpoint is the string that will be used in the api gateway as the services
+	// endpoint.
+	ApiEndpoint string `json:"apiEndpoint,omitempty"`
 }
 
 // PrivateWebService is the definition of the private web service. There can be only

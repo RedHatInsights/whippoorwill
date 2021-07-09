@@ -1,5 +1,6 @@
 = Providers
 
+- xref:apigateway.adoc[API Gateway]
 - xref:confighash.adoc[Config Hash]
 - xref:cronjob.adoc[CronJob]
 - xref:database.adoc[Database]

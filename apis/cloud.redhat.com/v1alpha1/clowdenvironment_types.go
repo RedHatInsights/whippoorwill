@@ -232,6 +232,15 @@ type LoggingConfig struct {
 	Mode LoggingMode `json:"mode"`
 }
 
+// ApiGatewayMode just determines if we enable or disable the API gateway
+// +kubebuilder:validation:Enum=enabled;disabled
+type ApiGatewayMode string
+
+// ApiGatewayConfig determines if this env should deploy and API gateway or not
+type ApiGatewayConfig struct {
+	Mode ApiGatewayMode `json:"mode,omitempty"`
+}
+
 // ServiceMeshMode just determines if we enable or disable the service mesh
 // +kubebuilder:validation:Enum=enabled;disabled
 type ServiceMeshMode string
@@ -400,6 +409,9 @@ type ProvidersConfig struct {
 
 	// Defines the environment for iqe/smoke testing
 	Testing TestingConfig `json:"testing,omitempty"`
+
+	// Defines the configuration for the API gateway
+	ApiGateway ApiGatewayConfig `json:"apiGateway,omitempty"`
 }
 
 // MinioStatus defines the status of a minio instance in local mode.

@@ -28,6 +28,8 @@ spec:
       namespace: test-basic-app-secret
     - name: test-basic-app-same-ns
       namespace: test-basic-app
+    apiGateway:
+      mode: enabled
   resourceDefaults:
     limits:
       cpu: 400m
@@ -58,7 +60,10 @@ spec:
             value: override_1
           - name: ENV_VAR_3
             value: env_var_3
-    web: True
+    webServices:
+      public:
+        enabled: true
+        apiEndpoint: puptoo
 ---
 apiVersion: v1
 data:

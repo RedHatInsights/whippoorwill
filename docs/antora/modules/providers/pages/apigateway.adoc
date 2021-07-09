@@ -1,0 +1,31 @@
+= ApiGateway Provider
+
+The *ApiGateway Provider* is responsible for collating public endpoints into a single aggregated
+endpoint. In stage and production this mode is disabled. In local and ephemeral environments
+it is used to offer a stage/prod like experience.
+
+== ClowdApp Configuration
+
+All applications that have the ``webServices.public.enabled`` set to ``true`` will be exposed via
+the Caddy API gateway server. By default they will be exposed at the following path 
+``api/<appName-deploymentName>/``. If an application requires to overide this path endpoint, it can
+be achieved by the example below.
+
+[source,yaml]
+----
+metadata:
+  name: ingress
+spec:
+  deployments:
+    name: service
+    webServices:
+      public:
+        enabled: true
+        apiEndpoint: ingress
+----
+
+In this example the app will be exposed via ``api/ingress/`` instead.
+
+== ClowdEnv Configuration
+
+The API gateway provider will only operate if the mode is set to `enabled`.

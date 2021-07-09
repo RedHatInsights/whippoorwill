@@ -49,6 +49,7 @@ import (
 	"cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers"
 
 	// These imports are to register the providers with the provider registration system
+	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/apigateway"
 	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/confighash"
 	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/cronjob"
 	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/database"

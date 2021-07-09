@@ -34,6 +34,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	// Import the providers to initialize them
+	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/apigateway"
 	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/confighash"
 	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/cronjob"
 	_ "cloud.redhat.com/clowder/v2/controllers/cloud.redhat.com/providers/database"

@@ -142,3 +142,61 @@ metadata:
   name: test-basic-app
   labels:
     kubernetes.io/metadata.name: test-basic-app
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: caddy
+  namespace: test-basic-app
+data:
+  Caddyfile: ":8080\n\n    log\n\t\n\treverse_proxy /api/puptoo/* puptoo-processor.test-basic-app.svc:8000\n"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: caddy
+  namespace: test-basic-app
+spec:
+  selector:
+    app: test-basic-app
+    env-app: caddy
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: gateway
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: caddy
+  namespace: test-basic-app
+spec:
+  selector:
+    matchLabels:
+      app: test-basic-app
+      env-app: caddy
+  template:
+    metadata:
+      labels:
+        app: test-basic-app
+        env-app: caddy
+    spec:
+      containers:
+      - name: caddy
+        image: caddy
+        ports:
+        - containerPort: 8080
+          name: gateway
+          protocol: TCP
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/caddy/Caddyfile
+          name: config
+          subPath: Caddyfile
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: caddy
+        name: config
