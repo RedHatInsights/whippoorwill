@@ -46,10 +46,6 @@ func buildPodTemplate(app *crd.ClowdApp, env *crd.ClowdEnvironment, pt *core.Pod
 
 	pt.ObjectMeta.Labels = labels
 
-	pt.Spec.ImagePullSecrets = []core.LocalObjectReference{
-		{Name: "quay-cloudservices-pull"},
-	}
-
 	envvar := pod.Env
 	envvar = append(envvar, core.EnvVar{Name: "ACG_CONFIG", Value: "/cdapp/cdappconfig.json"})
 

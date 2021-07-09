@@ -48,10 +48,6 @@ func initDeployment(app *crd.ClowdApp, env *crd.ClowdEnvironment, d *apps.Deploy
 	}
 	d.Spec.ProgressDeadlineSeconds = common.Int32Ptr(600)
 
-	d.Spec.Template.Spec.ImagePullSecrets = []core.LocalObjectReference{
-		{Name: "quay-cloudservices-pull"},
-	}
-
 	envvar := pod.Env
 	envvar = append(envvar, core.EnvVar{Name: "ACG_CONFIG", Value: "/cdapp/cdappconfig.json"})
 

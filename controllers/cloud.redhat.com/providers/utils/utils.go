@@ -43,10 +43,6 @@ func MakeLocalDB(dd *apps.Deployment, nn types.NamespacedName, baseResource obj.
 	}
 	dd.Spec.Template.ObjectMeta.Labels = labels
 
-	dd.Spec.Template.Spec.ImagePullSecrets = []core.LocalObjectReference{{
-		Name: "quay-cloudservices-pull",
-	}}
-
 	envVars := []core.EnvVar{
 		{Name: "POSTGRESQL_USER", Value: cfg.Username},
 		{Name: "POSTGRESQL_PASSWORD", Value: cfg.Password},

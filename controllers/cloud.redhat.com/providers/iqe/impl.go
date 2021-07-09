@@ -33,10 +33,6 @@ func CreateIqeJobResource(cache *providers.ObjectCache, cji *crd.ClowdJobInvocat
 	j.Spec.Template.Spec.RestartPolicy = core.RestartPolicyNever
 	j.Spec.BackoffLimit = common.Int32Ptr(0)
 
-	j.Spec.Template.Spec.ImagePullSecrets = []core.LocalObjectReference{
-		{Name: "quay-cloudservices-pull"},
-	}
-
 	pod := crd.PodSpec{
 		Resources: env.Spec.Providers.Testing.Iqe.Resources,
 	}

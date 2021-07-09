@@ -157,12 +157,6 @@ func makeLocalFeatureFlags(o obj.ClowdObject, objMap providers.ObjectMap, usePVC
 
 	dd.Spec.Template.ObjectMeta.Labels = labels
 
-	dd.Spec.Template.Spec.ImagePullSecrets = []core.LocalObjectReference{{
-		Name: "quay-cloudservices-pull",
-	}}
-
-	// get the secret
-
 	port := int32(4242)
 
 	envVars := []core.EnvVar{{
