@@ -12,19 +12,20 @@ RUN go mod download
 
 COPY Makefile Makefile
 
+RUN make controller-gen kustomize
+
+COPY hack/boilerplate.go.txt hack/boilerplate.go.txt
+
 # Copy the go source
 COPY main.go main.go
 COPY config/ config/
-COPY hack/boilerplate.go.txt hack/boilerplate.go.txt
-RUN make controller-gen kustomize
 COPY apis/ apis/
 COPY controllers/ controllers/
 
-RUN make manifests generate fmt vet
+RUN make manifests generate fmt vet release
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -o manager main.go
-RUN make release
 
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
