@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"fmt"
+	"strings"
 
 	crd "cloud.redhat.com/clowder/v2/apis/cloud.redhat.com/v1alpha1"
 	cyndi "cloud.redhat.com/clowder/v2/apis/cyndi-operator/v1alpha1"
@@ -50,7 +51,14 @@ func getKafkaUsername(env *crd.ClowdEnvironment, app *crd.ClowdApp) string {
 
 func getKafkaName(e *crd.ClowdEnvironment) string {
 	if e.Spec.Providers.Kafka.Cluster.Name == "" {
-		return e.Name
+		// generate a unique name based on the ClowdEnvironment's UID
+
+		// convert e.UID (which is a apimachinery types.UID) to string
+		// types.UID is a string alias so this should not fail...
+		uidString := string(e.UID)
+
+		// append the initial portion of the UUID onto the kafka cluster's name
+		return fmt.Sprintf("%s-%s", e.Name, strings.Split(uidString, "-")[0])
 	}
 	return e.Spec.Providers.Kafka.Cluster.Name
 }
@@ -71,7 +79,7 @@ func getConnectNamespace(env *crd.ClowdEnvironment) string {
 
 func getConnectClusterName(env *crd.ClowdEnvironment) string {
 	if env.Spec.Providers.Kafka.Connect.Name == "" {
-		return fmt.Sprintf("%s-connect", getKafkaName(env))
+		return getKafkaName(env)
 	}
 	return env.Spec.Providers.Kafka.Connect.Name
 }

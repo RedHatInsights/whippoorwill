@@ -503,7 +503,7 @@ KafkaClusterConfig defines options related to the Kafka cluster managed/monitore
 [cols="25a,75a", options="header"]
 |===
 | Field | Description
-| *`name`* __string__ | Defines the kafka cluster name (default: name of ClowdEnvironment)
+| *`name`* __string__ | Defines the kafka cluster name (default: <ClowdEnvironment Name>-<UID>)
 | *`namespace`* __string__ | The namespace the kafka cluster is expected to reside in (default: the environment's targetNamespace)
 | *`replicas`* __integer__ | The requested number of replicas for kafka/zookeeper. If unset, default is '1'
 | *`storageSize`* __string__ | Persistent volume storage size. If unset, default is '1Gi' Only applies when KafkaConfig.PVC is set to 'true'
@@ -555,7 +555,7 @@ KafkaConnectClusterConfig defines options related to the Kafka Connect cluster m
 [cols="25a,75a", options="header"]
 |===
 | Field | Description
-| *`name`* __string__ | Defines the kafka connect cluster name (default: '<kafka cluster's name>-connect')
+| *`name`* __string__ | Defines the kafka connect cluster name (default: <kafka cluster's name>)
 | *`namespace`* __string__ | The namespace the kafka connect cluster is expected to reside in (default: the kafka cluster's namespace)
 | *`replicas`* __integer__ | The requested number of replicas for kafka connect. If unset, default is '1'
 | *`version`* __string__ | Version. If unset, default is '2.5.0'

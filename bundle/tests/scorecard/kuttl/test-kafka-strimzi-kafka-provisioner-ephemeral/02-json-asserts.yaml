@@ -1,0 +1,7 @@
+---
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+commands:
+- script: sleep 5
+- script: ENV_UID=$(kubectl get env env-test-kafka-strimzi-kafka-provisioner-ephemeral -o jsonpath={.metadata.uid} | cut -f1 -d'-'); CLUSTER_NAME=$(kubectl get kafka -n test-kafka-strimzi-kafka-provisioner-ephemeral-kafka -o jsonpath='{.items[0].metadata.name}'); [[ "$CLUSTER_NAME" == "env-test-kafka-strimzi-kafka-provisioner-ephemeral-$ENV_UID" ]]
+- script: ENV_UID=$(kubectl get env env-test-kafka-strimzi-kafka-provisioner-ephemeral -o jsonpath={.metadata.uid} | cut -f1 -d'-'); CLUSTER_NAME=$(kubectl get kafkaconnect -n test-kafka-strimzi-kafka-provisioner-ephemeral-kafka-connect -o jsonpath='{.items[0].metadata.name}'); [[ "$CLUSTER_NAME" == "env-test-kafka-strimzi-kafka-provisioner-ephemeral-$ENV_UID" ]]

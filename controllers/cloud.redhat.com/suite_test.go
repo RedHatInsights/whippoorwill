@@ -187,7 +187,7 @@ func applyKafkaStatus(t *testing.T, ch chan int) {
 		// set a mock status on strimzi KafkaConnect cluster
 		connectCluster := strimzi.KafkaConnect{}
 		nn := types.NamespacedName{
-			Name:      "kafka-connect",
+			Name:      "kafka",
 			Namespace: "kafka",
 		}
 		err = k8sClient.Get(ctx, nn, &connectCluster)

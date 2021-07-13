@@ -16,9 +16,7 @@ spec:
     kafka:
       cluster:
         namespace: test-kafka-strimzi-kafka-provisioner-ephemeral-kafka
-        name: my-ephemeral-cluster
       connect:
-        name: my-other-connect-cluster
         namespace: test-kafka-strimzi-kafka-provisioner-ephemeral-kafka-connect
       mode: operator
       pvc: false

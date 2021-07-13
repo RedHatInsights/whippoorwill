@@ -2,7 +2,7 @@
 apiVersion: kafka.strimzi.io/v1beta1
 kind: Kafka
 metadata:
-  name: my-ephemeral-cluster
+  # name is asserted in json asserts
   namespace: test-kafka-strimzi-kafka-provisioner-ephemeral-kafka
   ownerReferences:
   - apiVersion: cloud.redhat.com/v1alpha1
@@ -29,7 +29,7 @@ spec:
 apiVersion: kafka.strimzi.io/v1beta1
 kind: KafkaConnect
 metadata:
-  name: my-other-connect-cluster
+  # name is asserted in json asserts
   namespace: test-kafka-strimzi-kafka-provisioner-ephemeral-kafka-connect
   annotations:
     strimzi.io/use-connector-resources: 'true'

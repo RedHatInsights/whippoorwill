@@ -197,7 +197,7 @@ spec:
                             type: object
                           name:
                             description: 'Defines the kafka cluster name (default:
-                              name of ClowdEnvironment)'
+                              <ClowdEnvironment Name>-<UID>)'
                             type: string
                           namespace:
                             description: 'The namespace the kafka cluster is expected
@@ -248,7 +248,7 @@ spec:
                             type: string
                           name:
                             description: 'Defines the kafka connect cluster name (default:
-                              ''<kafka cluster''s name>-connect'')'
+                              <kafka cluster''s name>)'
                             type: string
                           namespace:
                             description: 'The namespace the kafka connect cluster
