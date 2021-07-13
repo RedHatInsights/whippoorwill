@@ -1,0 +1,95 @@
+---
+apiVersion: v1
+data:
+  roleId: c29tZS1yb2xlLWlkCg==
+  secretId: c29tZS1zZWNyZXQtaWQK
+  githubToken: c29tZS10b2tlbgo=
+  mountPoint: c29tZS1tb3VudHBvaW50Cg==
+  url: aHR0cHM6Ly9zb21lLXVybC5jb20K
+kind: Secret
+metadata:
+  name: vault-secret
+  namespace: test-iqe-jobs-vault-secret-storage-ns
+type: Opaque
+---
+apiVersion: cloud.redhat.com/v1alpha1
+kind: ClowdEnvironment
+metadata:
+  name: test-iqe-jobs-vault
+spec:
+  targetNamespace: test-iqe-jobs-vault
+  providers:
+    testing:
+      # Level of access this pod has in the namespace
+      k8sAccessLevel: edit
+      # gather configuraiton for the specified environment
+      configAccess: environment
+      iqe:
+        # Base image for iqe-tests
+        imageBase: "quay.io/psav/clowder-hello"
+        vaultSecretRef:
+          name: vault-secret
+          namespace: test-iqe-jobs-vault-secret-storage-ns
+        resources:
+          limits:
+            cpu: 2
+            memory: 600Mi
+          requests:
+            cpu: 200m
+            memory: 256Mi
+    web:
+      port: 8000
+      mode: operator
+    metrics:
+      port: 9000
+      mode: operator
+      path: "/metrics"
+    kafka:
+      mode: none
+    db:
+      mode: none
+    logging:
+      mode: none
+    objectStore:
+      mode: none
+    inMemoryDb:
+      mode: none
+    featureFlags:
+      mode: none
+  resourceDefaults:
+    limits:
+      cpu: 400m
+      memory: 1024Mi
+    requests:
+      cpu: 30m
+      memory: 512Mi
+---
+apiVersion: cloud.redhat.com/v1alpha1
+kind: ClowdApp
+metadata:
+  name: host-inventory
+  namespace: test-iqe-jobs-vault
+spec:
+  testing:
+    iqePlugin: host-inventory 
+  envName: test-iqe-jobs-vault
+  deployments:
+    - name: service
+      podSpec:
+        image: quay.io/psav/clowder-hello
+---
+apiVersion: cloud.redhat.com/v1alpha1
+kind: ClowdJobInvocation
+metadata:
+  name: host-inventory-smoke 
+  namespace: test-iqe-jobs-vault
+spec:
+  appName: host-inventory
+  testing:
+    iqe:
+      imageTag: latest
+      ui:
+        enabled: false
+      marker: "smoke"
+      dynaconfEnvName: "clowder_smoke"
+      filter: "test_plugin_accessible"

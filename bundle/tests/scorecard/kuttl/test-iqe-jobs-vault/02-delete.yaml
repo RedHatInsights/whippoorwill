@@ -1,0 +1,13 @@
+---
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+delete:
+- apiVersion: v1
+  kind: Namespace
+  name: test-iqe-jobs-vault
+- apiVersion: v1
+  kind: Namespace
+  name: test-iqe-jobs-vault-secret-storage-ns
+- apiVersion: cloud.redhat.com/v1alpha1
+  kind: ClowdEnvironment
+  name: test-iqe-jobs-vault

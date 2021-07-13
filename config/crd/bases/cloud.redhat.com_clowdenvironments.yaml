@@ -483,6 +483,21 @@ spec:
                                   value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
                                 type: object
                             type: object
+                          vaultSecretRef:
+                            description: Defines the secret reference for loading
+                              vault credentials into the IQE job
+                            properties:
+                              name:
+                                description: Name defines the Name of a resource.
+                                type: string
+                              namespace:
+                                description: Namespace defines the Namespace of a
+                                  resource.
+                                type: string
+                            required:
+                            - name
+                            - namespace
+                            type: object
                         required:
                         - imageBase
                         type: object

@@ -341,6 +341,9 @@ type IqeConfig struct {
 	// format. If omitted, the default resource requirements from the
 	// ClowdEnvironment will be used.
 	Resources v1.ResourceRequirements `json:"resources,omitempty"`
+
+	// Defines the secret reference for loading vault credentials into the IQE job
+	VaultSecretRef NamespacedName `json:"vaultSecretRef,omitempty"`
 }
 
 // ServiceConfig provides options for k8s Service resources

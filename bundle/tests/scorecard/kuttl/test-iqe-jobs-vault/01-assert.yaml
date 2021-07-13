@@ -1,0 +1,131 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: host-inventory 
+  namespace: test-iqe-jobs-vault 
+  labels:
+    app: host-inventory
+  ownerReferences:
+  - apiVersion: cloud.redhat.com/v1alpha1
+    kind: ClowdApp
+    name: host-inventory
+type: Opaque
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: host-inventory-service
+  namespace: test-iqe-jobs-vault 
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: host-inventory-smoke-iqe
+  namespace: test-iqe-jobs-vault 
+spec:
+  template:
+    spec:
+      containers:
+        - args:
+          - "iqe_runner.sh"
+          name: host-inventory-smoke-iqe
+          image: quay.io/psav/clowder-hello:latest
+          env:
+            - name: "ENV_FOR_DYNACONF"
+              value: clowder_smoke
+            - name: "NAMESPACE"
+              value: test-iqe-jobs-vault
+            - name: CLOWDER_ENABLED
+              value: "true"
+            - name: ACG_CONFIG
+              value: /cdapp/cdappconfig.json
+            - name: IQE_DEBUG_POD
+              value: "false"
+            - name: IQE_PLUGINS
+              value: "host-inventory"
+            - name: IQE_MARKER_EXPRESSION
+              value: "smoke"
+            - name: IQE_FILTER_EXPRESSION
+              value: "test_plugin_accessible"
+            - name: DYNACONF_IQE_VAULT_LOADER_ENABLED
+              value: "true"
+            - name: DYNACONF_IQE_VAULT_VERIFY
+              value: "true"
+            - name: DYNACONF_IQE_VAULT_URL
+              valueFrom:
+                secretKeyRef:
+                  key: url
+                  name: host-inventory-smoke-vault
+                  optional: true
+            - name: DYNACONF_IQE_VAULT_MOUNT_POINT
+              valueFrom:
+                secretKeyRef:
+                  key: mountPoint
+                  name: host-inventory-smoke-vault
+                  optional: true
+            - name: DYNACONF_IQE_VAULT_ROLE_ID
+              valueFrom:
+                secretKeyRef:
+                  key: roleId
+                  name: host-inventory-smoke-vault
+                  optional: true
+            - name: DYNACONF_IQE_VAULT_SECRET_ID
+              valueFrom:
+                secretKeyRef:
+                  key: secretId
+                  name: host-inventory-smoke-vault
+                  optional: true
+            - name: DYNACONF_IQE_VAULT_GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: githubToken
+                  name: host-inventory-smoke-vault
+                  optional: true
+          resources:
+            limits:
+              cpu: "2"
+              memory: 600Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: host-inventory-smoke-iqe
+  namespace: test-iqe-jobs-vault 
+type: Opaque
+---
+apiVersion: v1
+data:
+  roleId: c29tZS1yb2xlLWlkCg==
+  secretId: c29tZS1zZWNyZXQtaWQK
+  githubToken: c29tZS10b2tlbgo=
+  mountPoint: c29tZS1tb3VudHBvaW50Cg==
+  url: aHR0cHM6Ly9zb21lLXVybC5jb20K
+kind: Secret
+metadata:
+  name: host-inventory-smoke-vault
+  namespace: test-iqe-jobs-vault
+type: Opaque
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: iqe-test-iqe-jobs-vault
+  namespace: test-iqe-jobs-vault
+---
+apiVersion: rbac.authorization.k8s.io/v1 
+kind: RoleBinding 
+metadata:
+  name: iqe-test-iqe-jobs-vault
+  namespace: test-iqe-jobs-vault
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+- kind: ServiceAccount
+  name: iqe-test-iqe-jobs-vault
+  namespace: test-iqe-jobs-vault

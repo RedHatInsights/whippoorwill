@@ -426,6 +426,7 @@ InitContainer is a struct defining a k8s init container. This will be deployed a
 | Field | Description
 | *`imageBase`* __string__ | 
 | *`resources`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/#resourcerequirements-v1-core[$$ResourceRequirements$$]__ | A pass-through of a resource requirements in k8s ResourceRequirements format. If omitted, the default resource requirements from the ClowdEnvironment will be used.
+| *`vaultSecretRef`* __xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-namespacedname[$$NamespacedName$$]__ | Defines the secret reference for loading vault credentials into the IQE job
 |===
 
 
@@ -632,6 +633,7 @@ NamespacedName type to represent a real Namespaced Name
 .Appears In:
 ****
 - xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-featureflagsconfig[$$FeatureFlagsConfig$$]
+- xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-iqeconfig[$$IqeConfig$$]
 - xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-kafkaconfig[$$KafkaConfig$$]
 - xref:{anchor_prefix}-cloud-redhat-com-clowder-v2-apis-cloud-redhat-com-v1alpha1-providersconfig[$$ProvidersConfig$$]
 ****
