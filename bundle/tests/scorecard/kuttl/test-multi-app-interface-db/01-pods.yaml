@@ -88,3 +88,32 @@ data:
   db.port: NTQzMg==  # 5432
   db.user: dXNlcmJhZAo=  # userbad
   db.password:  cGFzc3dvcmQxMjM=  # password123
+---
+apiVersion: cloud.redhat.com/v1alpha1
+kind: ClowdApp
+metadata:
+  name: app-d
+  namespace: test-multi-app-interface-db
+spec:
+  envName: test-multi-app-interface-db
+  pods:
+  - name: processor
+    image: quay.io/psav/clowder-hello
+  database:
+    name: app-d
+    version: 10
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-c-readonly-db
+  namespace: test-multi-app-interface-db
+  annotations:
+    database: app-d
+type: Opaque
+data:
+  db.host: dW51c3VhbC5kYi5uYW1lLmV4YW1wbGUuY29t  # app-b-stage.rds.example.com
+  db.name: ZGJuYW1l  # dbname
+  db.port: NTQzMg==  # 5432
+  db.user: dXNlcmJhZAo=  # userbad
+  db.password:  cGFzc3dvcmQxMjM=  # password123
