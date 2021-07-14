@@ -112,20 +112,33 @@ func (a *appInterface) Provide(app *crd.ClowdApp, c *config.AppConfig) error {
 		return secrets.Items[i].Name < secrets.Items[j].Name
 	})
 
-	dbConfigs, err := genDbConfigs(secrets.Items)
+	var matched config.DatabaseConfig
+
+	matches, err := searchAnnotationSecret(app.Name, secrets.Items)
 
 	if err != nil {
-		return err
+		return errors.Wrap("failed to extract annotated secret", err)
 	}
 
-	matched := resolveDb(dbSpec, dbConfigs)
+	if len(matches) == 0 {
 
-	if matched == (config.DatabaseConfig{}) {
-		return &errors.MissingDependencies{
-			MissingDeps: map[string][]string{
-				"database": {app.Name},
-			},
+		dbConfigs, err := genDbConfigs(secrets.Items)
+
+		if err != nil {
+			return err
 		}
+
+		matched = resolveDb(dbSpec, dbConfigs)
+
+		if matched == (config.DatabaseConfig{}) {
+			return &errors.MissingDependencies{
+				MissingDeps: map[string][]string{
+					"database": {app.Name},
+				},
+			}
+		}
+	} else {
+		matched = matches[0]
 	}
 
 	// The creds given by app-interface have elevated privileges
@@ -194,4 +207,15 @@ func genDbConfigs(secrets []core.Secret) ([]config.DatabaseConfig, error) {
 	}
 
 	return configs, nil
+}
+
+func searchAnnotationSecret(appName string, secrets []core.Secret) ([]config.DatabaseConfig, error) {
+	for _, secret := range secrets {
+		anno := secret.GetAnnotations()
+		if v, ok := anno["database"]; ok && v == appName {
+			configs, err := genDbConfigs([]core.Secret{secret})
+			return configs, err
+		}
+	}
+	return []config.DatabaseConfig{}, nil
 }

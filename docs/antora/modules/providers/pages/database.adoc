@@ -44,11 +44,13 @@ ClowdEnv Config options available:
 ==== app-interface
 
 In app-interface mode, the Clowder operator does not create any resources and
-simply passes through configuration from a secret to the client config. The
-provider will search all secrets in the same namespace looking for a hostname
-which is of the form `+<name>-<env>.*********+` where `+name+` is the name
-defined in the `+ClowdApp+` `+database+` stanza, and `+env+` is usually one of
-either `+stage+` or `+prod+`.
+simply passes through configuration from a secret to the client config. First
+the provider will search for any secrets that have the annotation of
+``database: <app-name>`` where the app-name matches the ClowdApp name. If this
+cannot be found then the provider will search all secrets in the same namespace
+looking for a hostname which is of the form `+<name>-<env>.*********+` where
+`+name+` is the name defined in the `+ClowdApp+` `+database+` stanza, and
+`+env+` is usually one of either `+stage+` or `+prod+`.
 
 == Generated App Configuration
 
