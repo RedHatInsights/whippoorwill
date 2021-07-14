@@ -55,6 +55,9 @@ spec:
                 description: A ProvidersConfig object, detailing the setup and configuration
                   of all the providers used in this ClowdEnvironment.
                 properties:
+                  authSidecar:
+                    description: Use sidecar
+                    type: boolean
                   db:
                     description: Defines the Configuration for the Clowder Database
                       Provider.
