@@ -36,6 +36,9 @@ func initDeployment(app *crd.ClowdApp, env *crd.ClowdEnvironment, d *apps.Deploy
 
 	pod := deployment.PodSpec
 	d.Spec.Template.SetAnnotations(make(map[string]string))
+	if env.Spec.Providers.AuthSidecar {
+		d.Spec.Template.Annotations["authsidecar"] = "enabled"
+	}
 	d.Spec.Replicas = deployment.MinReplicas
 	d.Spec.Selector = &metav1.LabelSelector{MatchLabels: labels}
 	d.Spec.Template.ObjectMeta.Labels = labels

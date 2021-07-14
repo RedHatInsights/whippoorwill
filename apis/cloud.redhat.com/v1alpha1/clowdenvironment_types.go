@@ -400,6 +400,9 @@ type ProvidersConfig struct {
 
 	// Defines the environment for iqe/smoke testing
 	Testing TestingConfig `json:"testing,omitempty"`
+
+	// Use sidecar
+	AuthSidecar bool `json:"authSidecar,omitempty"`
 }
 
 // MinioStatus defines the status of a minio instance in local mode.

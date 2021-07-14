@@ -22,6 +22,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
 
 var (
@@ -104,6 +105,16 @@ func Run(metricsAddr string, probeAddr string, enableLeaderElection bool, config
 			setupLog.Error(err, "unable to create webhook", "webhook", "Captain")
 			os.Exit(1)
 		}
+		mgr.GetWebhookServer().Register(
+			"/mutate-pod",
+			&webhook.Admission{
+				Handler: &mutantPod{
+					Client:   mgr.GetClient(),
+					Recorder: mgr.GetEventRecorderFor("app"),
+				},
+			},
+		)
+
 	}
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
